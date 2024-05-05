@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@font-face {
+  font-family: 'montserrat';
+  src: url('../fonts/Montserrat-VariableFont_wght.woff2') format('woff2');
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'montserrat'
+}
+
+.container {
+  width: 95%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.box-shadow {
+  box-shadow: 0 0 10px rgba(0, 0, 0, .1)
+}
+
+@media screen (min-width: 400px) {
+  .container {
+    width: 90%
+  }
+}
