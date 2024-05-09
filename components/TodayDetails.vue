@@ -45,6 +45,9 @@ export default {
       immediate: true
     }
   },
+  mounted() {
+    this.fetchdata()
+  },
   methods: {
     checkPrecipation() {
       if (this.data.current.precip_mm && this.data.current.precip_mm > 0) { this.precipation = 'Осадки' }

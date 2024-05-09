@@ -41,7 +41,7 @@ export default {
     '@nuxtjs/proxy'
   ],
   axios: {
-    baseURL: 'https://cors-anywhere.herokuapp.com/http://api.weatherapi.com/v1'
+    baseURL: 'http://api.weatherapi.com/v1'
   },
   // Axios module configuration
   publicRuntimeConfig: {
