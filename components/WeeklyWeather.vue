@@ -1,10 +1,10 @@
-<!-- <script>
+<script>
 export default {
   name: 'WeeklyWeather',
   data() {
     return {
-      weekDay: [],
-      today: [],
+      response: null,
+      weeklyData: [],
       dayNamesShortcut: {
         'понедельник': 'Пн',
         'вторник': 'Вт',
@@ -42,50 +42,35 @@ export default {
     }
   },
   computed: {
-    weatherData() {
+    setData() {
       return this.$store.state.data
     }
   },
   watch: {
-    weatherData: {
+    setData: {
       handler(data) {
         if (data) {
-          this.parseWeekdayNames()
+          this.$set(this, 'response', data)
+          this.loopResponse(data)
         }
       },
       immediate: true
     }
   },
-  // mounted() {
-  //   this.fetchWeeklyForecast()
-  //     this.parseWeekdayNames()
-  // },
   methods: {
-    // async fetchWeeklyForecast() {
-    //   try {
-    //     const response = await this.$axios.$get('/forecast.json', {
-    //       params: {
-    //         key: this.$config.key,
-    //         q: this.location,
-    //         days: 7,
-    //         aqi: 'no',
-    //         alerts: 'no'
-    //       }
-    //     })
-    //     this.data = response
-    //   } catch (err) {
-    //     console.error('Error with fetching data: ', err)
-    //   }
-    // },
-    parseWeekdayNames() {
-      for (const day of this.data.forecast.forecastday) {
+    loopResponse(data) {
+      this.weeklyData = []
+      for (const day of data.forecast.forecastday) {
         const date = new Date(day.date)
         const weekday = date.toLocaleString('ru', { weekday: 'long' })
         this.pushToRenderObj(day, weekday)
       }
-      // Set "Сегодня" and "Завтра"
-      this.weekDay[0].short = 'Сегодня'
-      this.weekDay[1].short = 'Завтра'
+    },
+    parseWeekdayNames() {
+      if (this.weeklyData.length > 5) {
+        this.weeklyData[0].short = 'Сегодня'
+        this.weeklyData[1].short = 'Завтра'
+      }
     },
     parseMonthNames(data) {
       const newdate = new Date(data.date)
@@ -101,13 +86,14 @@ export default {
       return this.convertCondition[data.day.condition.text.trim()]
     },
     pushToRenderObj(day, weekday) {
-      this.weekDay.push({
+      this.weeklyData.push({
         short: this.dayNamesShortcut[weekday],
         date: this.parseMonthNames(day),
         temperature: this.getTempratures(day),
         condition: this.getCondition(day),
         icon: this.getIcon(day)
       })
+      this.parseWeekdayNames()
     }
   },
 };
@@ -121,7 +107,7 @@ export default {
     </div>
     <div
       class="w-full h-full grid grid-rows-1 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-5 rounded-xl box-shadow p-5">
-      <div v-for="(day, index) in weekDay" :key="index" class="col-span-1 row-span-1 p-4 rounded-lg bg-low-blue">
+      <div v-for="(day, index) in weeklyData" :key="index" class="col-span-1 row-span-1 p-4 rounded-lg bg-low-blue">
         <p class="text-2xl md:text-lg text-black leading-none mb-1"> {{ day.short }} </p>
         <p class="text-lg md:text-sm text-low-dark"> {{ day.date }}</p>
         <div class="my-3">
@@ -133,4 +119,4 @@ export default {
       </div>
     </div>
   </div>
-</template> -->
+</template>

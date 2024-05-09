@@ -5,6 +5,8 @@ export default {
     return {
       data: null,
       precipation: 'Heт',
+      icon: 'cdn.weatherapi.com/weather/64x64/day/113.png',
+      temp: null,
       city: null,
       time: null,
       windDirs: {
@@ -31,9 +33,6 @@ export default {
   computed: {
     selectedCity() {
       return this.$store.state.selectedCity
-    },
-    weatherData() {
-      return this.$store.state.data
     }
   },
   watch: {
@@ -46,37 +45,59 @@ export default {
       immediate: true
     }
   },
-  mounted() {
-    this.fetchdata()
-  },
   methods: {
+    checkPrecipation() {
+      if (this.data.current.precip_mm && this.data.current.precip_mm > 0) { this.precipation = 'Осадки' }
+      else { this.precipation = 'Без осадков' }
+    },
+    getWindDir() {
+      return this.windDirs[this.data.current.wind_dir] || 'Neopredelyonnie'
+    },
+    updateDetails() {
+      this.details = [
+        { icon: 'temprature', title: 'Температура', info: `${this.data.current.temp_c}° - ощущается как ${this.data.current.feelslike_c}°` },
+        { icon: 'pressure', title: 'Давление ', info: `${this.data.current.pressure_mb} мм ртутного столба - нормальное` },
+        { icon: 'precipation', title: 'Осадки', info: this.precipation },
+        { icon: 'wind', title: 'Ветер', info: `${this.data.current.wind_kph} ${this.getWindDir()} - легкий ветер` },
+      ]
+    },
+    getCityAndTime() {
+      this.city = this.data.location.name
+      this.time = this.data.location.localtime.split(' ')[1]
+    },
+    getCurrentTemp() {
+      this.temp = this.data.current.temp_c
+    },
+    getCurrentIcon() {
+      this.icon = this.data.current.condition.icon
+    },
     async fetchdata() {
-      await this.$store.dispatch('fetchData')
-      // this.checkPrecipation()
-      this.getWindDir()
-      this.getCityAndTime()
-      this.updateDetails()
-    }
+      try {
+        const response = await this.$axios.$get('/forecast.json', {
+          params: {
+            key: this.$config.key,
+            q: this.selectedCity,
+            days: 7,
+            aqi: 'no',
+            alerts: 'no'
+          }
+        })
+        this.$set(this, 'data', response)
+        this.setData(response)
+        this.checkPrecipation()
+        this.getWindDir()
+        this.getCurrentIcon()
+        this.getCurrentTemp()
+        this.getCityAndTime()
+        this.updateDetails()
+      } catch (err) {
+        throw err
+      }
+    },
+    async setData(data) {
+      await this.$store.commit('SET_DATA', data)
+    },
   },
-  // checkPrecipation() {
-  //   if (this.data.current.precip_mm) this.precipation = 'Осадки'
-  //   else this.precipation = 'Без осадков'
-  // },
-  getWindDir() {
-    return this.windDirs[this.data.current.wind_dir] || 'Neopredelyonnie'
-  },
-  updateDetails() {
-    this.details = [
-      { icon: 'temprature', title: 'Температура', info: `${this.data.current.temp_c}° - ощущается как ${this.data.current.feelslike_c}°` },
-      { icon: 'pressure', title: 'Давление ', info: `${this.data.current.pressure_mb} мм ртутного столба - нормальное` },
-      { icon: 'precipation', title: 'Осадки', info: this.precipation },
-      { icon: 'wind', title: 'Ветер', info: `${this.data.current.wind_kph} ${this.getWindDir()} - легкий ветер` },
-    ]
-  },
-  getCityAndTime() {
-    this.city = this.data.location.name
-    this.time = this.data.location.localtime.split(' ')[1]
-  }
 }
 </script>
 <template>
@@ -85,11 +106,11 @@ export default {
       <div class="w-full md:4/5 xl:w-[35%] p-5 box-shadow rounded-xl">
         <div class="flex justify-between">
           <div>
-            <p class="text-8xl text-blue font-medium">{{ 20 }}°</p>
+            <p class="text-8xl text-blue font-medium">{{ temp }}°</p>
             <p class="text-[40px] text-black font-normal"> {{ 'Сегодня' }}</p>
           </div>
           <div class="w-[119px] flex items-start justify-end pt-3">
-            <img class="w-full" src="/img/sun.svg" alt="sun icon">
+            <img class="w-full" :src="`https:${icon}`" alt="sun icon">
           </div>
         </div>
         <div class="pt-8">

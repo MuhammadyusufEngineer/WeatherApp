@@ -30,7 +30,8 @@ export default {
   buildModules: [
     // https://go.nuxtjs.dev/eslint
     '@nuxtjs/eslint-module',
-    '@nuxtjs/tailwindcss'
+    '@nuxtjs/tailwindcss',
+    '@nuxtjs/color-mode'
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -39,16 +40,12 @@ export default {
     '@nuxtjs/axios',
     '@nuxtjs/proxy'
   ],
-
-  serverMiddleware: [
-    { path: '/api/weather', handler: '~/serverMiddleware/weather.js' }
-  ],
   axios: {
-    proxy: true,
+    baseURL: 'https://cors-anywhere.herokuapp.com/http://api.weatherapi.com/v1'
   },
   // Axios module configuration
   publicRuntimeConfig: {
-    key: process.env.key || '9aaeaf022c454224b26121814242504'
+    key: process.env.KEY || '9aaeaf022c454224b26121814242504'
   },
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
