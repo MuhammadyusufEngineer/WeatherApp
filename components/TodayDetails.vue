@@ -5,7 +5,7 @@ export default {
     return {
       data: null,
       precipation: 'Heт',
-      icon: 'cdn.weatherapi.com/weather/64x64/day/113.png',
+      icon: '//cdn.weatherapi.com/weather/64x64/day/113.png',
       temp: null,
       city: null,
       time: null,
