@@ -41,7 +41,7 @@ export default {
     '@nuxtjs/proxy'
   ],
   axios: {
-    baseURL: 'http://api.weatherapi.com/v1'
+    baseURL: 'https://api.weatherapi.com/v1'
   },
   // Axios module configuration
   publicRuntimeConfig: {
